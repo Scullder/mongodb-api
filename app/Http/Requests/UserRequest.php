@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Mongodb\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest
@@ -23,9 +24,30 @@ class UserRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'name' => 'required',
-            'email' => 'required',
+            'email' => 'required|unique:users,email,' . $this->route('user') . ',_id',
+            'discord' => 'nullable',
+            'telegram' => 'nullable',
+            'instagram' => 'nullable',
+            'description' => 'nullable',
+            /* 'image' => [
+                function ($attribute, $value, $fail) {
+                    if (!request()->hasFile($attribute)) {
+                        request()->remove($attribute);
+                    }
+                }
+            ], */
         ];
+
+        if (request()->hasFile('image')) {
+            $rules['image'] = 'image';
+        }
+
+        if (request()->hasFile('backImage')) {
+            $rules['backImage'] = 'image';
+        }
+       
+        return $rules;
     }
 }

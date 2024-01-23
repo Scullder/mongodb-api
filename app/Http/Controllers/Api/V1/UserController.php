@@ -57,28 +57,32 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, $id)
     {
-        $user = auth('sanctum')->user();
+        $user = User::find($id);
+        $validated = $request->validated();
 
-        /* $image = ($request->file('image'))
-            ? $request->file('image')?->storeAs("{$user->_id}/profile", 'avatar.' . $request->file('image')->extension())
-            : Str::after($request->image, 'storage/'); */
+        $files = ['image', 'backImage'];
 
-        if($request->file('image')) {
-            $image = $request->file('image')?->storeAs("{$user->_id}/profile", 'avatar.' . $request->file('image')->extension());
-        } else {
-            $relativePath = Str::after($request->image, 'storage/');
-            $image = Storage::exists($relativePath) ? $relativePath : '';
+        foreach ($files as $file) {
+            if (
+                $request->hasFile($file) ||
+                Str::after(parse_url($request->$file, PHP_URL_PATH), 'storage/') != $user->$file
+            ) {
+                Storage::delete((string)$user->$file);
+                $validated[$file] = null;
+            }
+
+            if ($request->hasFile($file)) {
+                $validated[$file] = $request
+                    ->file($file)
+                    ?->storeAs("{$id}/profile", "{$file}.{$request->file($file)->extension()}");
+            }
         }
+        
+        //dd($validated);
 
-        User::where('_id', $id)->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'email' => $request->email,
-            'tag' => $request->tag,
-            'image' => $image,
-        ]);
+        $user->update($validated);
 
-        return new UserResource(User::where('_id', $id)->first());
+        return new UserResource($user);
     }
 
     /**

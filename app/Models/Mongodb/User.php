@@ -11,11 +11,15 @@ class User extends Authenticatable
     use HasApiTokens;
 
     protected $fillable = [
-        'email', 
-        'password', 
-        'name', 
-        'tag', 
+        'name',
+        'email',
+        'password',
+        'description',
+        'discord',
+        'telegram',
+        'instagram',
         'image',
+        'backImage',
     ];
 
 }
