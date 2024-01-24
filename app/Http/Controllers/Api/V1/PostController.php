@@ -56,6 +56,8 @@ class PostController extends Controller
         $credentials = $request->validated();
         $user = auth('sanctum')->user();
 
+        //TODO: refactoring images store algorithm
+
         $post = Post::create([
             'authorId' => $user->_id,
             'title' => $credentials['title'],

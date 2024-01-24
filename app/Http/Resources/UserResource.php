@@ -18,14 +18,15 @@ class UserResource extends JsonResource
     public function toArray($request)
     {
         return [
+            // TODO: use id abstraction
             '_id' => $this->_id,
             'email' => $this->email,
             'name' => $this->name,
             'description' => $this->description,
-            'image' => $this->image 
+            'image' => $this->image && Storage::exists($this->image)
                 ? Storage::url($this->image) . '?t=' . time() 
                 : null,
-            'backImage' => $this->backImage 
+            'backImage' => $this->backImage && Storage::exists($this->backImage)
                 ? Storage::url($this->backImage) . '?t=' . time() 
                 : null,
             'tag' => $this->tag,

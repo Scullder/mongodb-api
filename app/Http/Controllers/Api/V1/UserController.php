@@ -14,6 +14,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
+        // TODO: take out to the route layer
         $this->middleware('auth.api')->except(['index', 'show']);
     }
     
@@ -24,7 +25,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        // TODO: finish all methods and refactor existed (for all controllers)
     }
 
     /**
@@ -77,8 +78,6 @@ class UserController extends Controller
                     ?->storeAs("{$id}/profile", "{$file}.{$request->file($file)->extension()}");
             }
         }
-        
-        //dd($validated);
 
         $user->update($validated);
 

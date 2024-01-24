@@ -9,12 +9,14 @@ use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->prefix('/user')->group(function () {
+    // TODO refactor to the apiResource
     Route::post('/signup', 'signup');
     Route::post('/login', 'login')->name('login');
     Route::post('/logout', 'logout');
 });
 
 Route::controller(UserController::class)->prefix('/user')->middleware('auth.api')->group(function () {
+    // TODO refactor to the apiResource
     Route::post('/store', 'store');
     Route::delete('/{id}', 'destroy');
     Route::patch('/update/{id}', 'update');

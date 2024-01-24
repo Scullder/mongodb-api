@@ -53,3 +53,11 @@ $response = $kernel->handle(
 )->send();
 
 $kernel->terminate($request, $response);
+
+/**
+ * TODO List
+ */
+
+ // TODO: send user mail trought Event handling
+
+
