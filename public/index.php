@@ -59,5 +59,7 @@ $kernel->terminate($request, $response);
  */
 
  // TODO: send user mail trought Event handling
+ // TODO: fake data
+ // TODO: start file for boot whole application
 
 

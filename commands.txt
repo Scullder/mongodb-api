@@ -1,1 +1,2 @@
 shift + alt + F - format code
+ctrl + shift + P - open user setting 

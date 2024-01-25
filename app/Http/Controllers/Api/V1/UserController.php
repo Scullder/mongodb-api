@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
+use App\Services\UploadService;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
 use App\Models\Mongodb\User;
@@ -56,27 +57,17 @@ class UserController extends Controller
      * @param  \App\Http\Requests\UserRequest $request
      * @param  int  $id
      */
-    public function update(UserRequest $request, $id)
+    public function update(UserRequest $request, User $user, UploadService $uploadService)
     {
-        $user = User::find($id);
         $validated = $request->validated();
 
-        $files = ['image', 'backImage'];
-
-        foreach ($files as $file) {
-            if (
-                $request->hasFile($file) ||
-                Str::after(parse_url($request->$file, PHP_URL_PATH), 'storage/') != $user->$file
-            ) {
-                Storage::delete((string)$user->$file);
-                $validated[$file] = null;
-            }
-
-            if ($request->hasFile($file)) {
-                $validated[$file] = $request
-                    ->file($file)
-                    ?->storeAs("{$id}/profile", "{$file}.{$request->file($file)->extension()}");
-            }
+        foreach (['image','backImage'] as $name) {
+            $validated[$name] = $uploadService->singleUpload(
+                path: "{$user->id}/profile",
+                file: $request->file($name),
+                oldFile: $request->input($name),
+                modelFile: $user->$name,
+            );
         }
 
         $user->update($validated);

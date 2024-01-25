@@ -26,7 +26,7 @@ class UserRequest extends FormRequest
     {
         $rules = [
             'name' => 'required',
-            'email' => 'required|unique:users,email,' . $this->route('user') . ',_id',
+            //'email' => 'required|unique:users,email,' . $this->user . ',_id',
             'discord' => 'nullable',
             'telegram' => 'nullable',
             'instagram' => 'nullable',
@@ -42,10 +42,14 @@ class UserRequest extends FormRequest
 
         if (request()->hasFile('image')) {
             $rules['image'] = 'image';
+        } else {
+            $rules['image'] = 'nullable';
         }
 
         if (request()->hasFile('backImage')) {
             $rules['backImage'] = 'image';
+        } else {
+            $rules['backImage'] = 'nullable';
         }
        
         return $rules;

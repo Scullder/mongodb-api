@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\PostRequest;
-use App\Http\Resources\PostResource;
-use Illuminate\Http\Request;
-use App\Models\Mongodb\Post;
-use Illuminate\Support\Facades\Storage;
 use App\Filters\PostFilter;
-use Illuminate\Support\Facades\File;
+use App\Models\Mongodb\Post;
+use Illuminate\Http\Request;
+use App\Services\UploadService;
+use App\Http\Requests\PostRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\PostResource;
 
 class PostController extends Controller
 {
@@ -53,15 +52,13 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
-        $credentials = $request->validated();
+        $validated = $request->validated();
         $user = auth('sanctum')->user();
 
-        //TODO: refactoring images store algorithm
-
         $post = Post::create([
-            'authorId' => $user->_id,
-            'title' => $credentials['title'],
-            'text' => $credentials['text'],
+            'authorId' => $user->id,
+            'title' => $validated['title'],
+            'text' => $validated['text'],
             'images' => [],
         ]);
 
@@ -69,7 +66,7 @@ class PostController extends Controller
             $images = [];
 
             foreach ($request->file('images') as $image) {
-                $images[] = $image->store("{$user->_id}/images/posts/post-{$post->id}");
+                $images[] = $image->store("{$user->id}/images/posts/post-{$post->id}");
             }
 
             $post->update([
@@ -87,32 +84,19 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(PostRequest $request, $id)
+    public function update(PostRequest $request, Post $post, UploadService $uploadService)
     {
         $validated = $request->validated();
 
-        $post = Post::find($id);
-
-        $images = [];
-
-        // Delete all old images if not in current request
-        if (isset($validated['oldImages'])) {
-            foreach ($validated['oldImages'] as $key => $image) {
-                $images[] = trim(str_replace('storage', '', parse_url($image, PHP_URL_PATH)), '/');
-            }
-
-            Storage::delete(array_diff($post->images, $images));
-        }
-
-        // Store new images
-        foreach ($validated['images'] ?? [] as $key => $image) {
-            if (File::isFile($image)) {
-                $images[] = $image->store(auth('sanctum')->user()['_id'] . "/images/posts/post-{$post->_id}");
-            }
-        }
+        $images = $uploadService->multiUpload(
+            path: $post->authorId . "/images/posts/post-{$post->id}", 
+            files: $request->files('images'),
+            oldFiles: $request->input('images'),
+            modelFiles: $post->images
+        );
 
         $post->update([
-            'title' => (string) $validated['title'] ?? '',
+            'title' => (string) $validated['title'],
             'text' => (string) $validated['text'],
             'images' => $images,
         ]);

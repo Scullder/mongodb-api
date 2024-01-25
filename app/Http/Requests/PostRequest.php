@@ -24,19 +24,10 @@ class PostRequest extends FormRequest
      */
     public function rules()
     {
-        // Get rules for every 'images' items depend from it type(string, file)
-        /* return array_merge([
-          'title' => 'nullable',
-          'text' => 'required',
-          'images.*' => 'nullable|image',
-          'oldImages.*' => 'nullable'
-        ], $this->getValidationRules('images')); */
-
         return [
             'title' => 'nullable',
             'text' => 'required',
             'images.*' => 'nullable|image',
-            'oldImages.*' => 'nullable|string',
         ];
     }
 
@@ -47,22 +38,5 @@ class PostRequest extends FormRequest
                 $validator->errors()->add('images', __('validation.images'));
             }
         });
-    }
-
-    public function getValidationRules(string $key): array
-    {
-        $rules = [];
-
-        dd($this->all());
-
-        foreach ($this->all()['images'] ?? [] as $keyImage => $image) {
-            if (File::isFile($image)) {
-                $rules["$key.$keyImage"] = 'nullable|image';
-            } else {
-                $rules["$key.$keyImage"] = 'nullable|string';
-            }
-        }
-
-        return $rules;
     }
 }
