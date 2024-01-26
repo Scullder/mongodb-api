@@ -6,6 +6,7 @@ use App\Filters\PostFilter;
 use App\Models\Mongodb\Post;
 use Illuminate\Http\Request;
 use App\Services\UploadService;
+use Jenssegers\Mongodb\Auth\User;
 use App\Http\Requests\PostRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
@@ -48,9 +49,9 @@ class PostController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\PostRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\PostResource
      */
-    public function store(PostRequest $request)
+    public function store(PostRequest $request, User $user, UploadService $uploadService)
     {
         $validated = $request->validated();
         $user = auth('sanctum')->user();
@@ -62,19 +63,12 @@ class PostController extends Controller
             'images' => [],
         ]);
 
-        if ($request->hasFile('images')) {
-            $images = [];
-
-            foreach ($request->file('images') as $image) {
-                $images[] = $image->store("{$user->id}/images/posts/post-{$post->id}");
-            }
-
-            $post->update([
-                'images' => $images,
-            ]);
-        }
-
-        return response('', 201);
+        $post->update([
+            'images' => $uploadService->multiUpload($request, 'images', "{$user->id}/posts/post-{$post->id}"),
+        ]);
+        
+        // 201
+        return new PostResource($post);
     }
 
     /**
@@ -88,12 +82,7 @@ class PostController extends Controller
     {
         $validated = $request->validated();
 
-        $images = $uploadService->multiUpload(
-            path: $post->authorId . "/images/posts/post-{$post->id}", 
-            files: $request->files('images'),
-            oldFiles: $request->input('images'),
-            modelFiles: $post->images
-        );
+        $images = $uploadService->multiUpload($request, 'images', "{$post->authorId}/posts/post-{$post->id}", $post->images);
 
         $post->update([
             'title' => (string) $validated['title'],

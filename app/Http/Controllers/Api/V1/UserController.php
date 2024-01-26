@@ -61,14 +61,8 @@ class UserController extends Controller
     {
         $validated = $request->validated();
 
-        foreach (['image','backImage'] as $name) {
-            $validated[$name] = $uploadService->singleUpload(
-                path: "{$user->id}/profile",
-                file: $request->file($name),
-                oldFile: $request->input($name),
-                modelFile: $user->$name,
-            );
-        }
+        $validated['image'] = $uploadService->singleUpload($request, 'image', "{$user->id}/profile", $user->image);
+        $validated['backImage'] = $uploadService->singleUpload($request, 'backImage', "{$user->id}/profile", $user->backImage);
 
         $user->update($validated);
 

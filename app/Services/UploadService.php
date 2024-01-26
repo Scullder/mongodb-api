@@ -2,27 +2,29 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Files from Request can be of type File and type string, so we need save them in various ways
+ * 
+ */
 class UploadService
 {
-    // TODO: вместо кучи параметров использовать Request и ключ файла !?
-    public function singleUpload(string $path, \Illuminate\Http\UploadedFile|null $file, string|null $oldFile = null, string|null $modelFile = null): string|null
+    public function singleUpload(Request $request, string $key, string $path, $modelFile = null): string|null
     {
         $uploaded = null;
 
-        if ($modelFile) {
-            $uploaded = Str::after(parse_url($oldFile, PHP_URL_PATH), 'storage/');
-            
-            if ($uploaded != $modelFile) {
-                Storage::delete((string)$modelFile);
-            }
+        $uploaded = Str::after(parse_url($request->input($key), PHP_URL_PATH), 'storage/');
+        
+        if ($uploaded != $modelFile) {
+            Storage::delete((string)$modelFile);
         }
 
-        if ($file) {
+        if ($request->file($key)) {
             try {
-                $uploaded = $file->store($path);
+                $uploaded = $request->file($key)->store($path);
             } catch (\Exception) {
                 $uploaded = null;
             }
@@ -31,12 +33,12 @@ class UploadService
         return $uploaded;
     }
 
-    public function multiUpload(string $path, array $files, array|null $oldFiles = null, array|null $modelFiles = null): array
+    public function multiUpload(Request $request, string $key, string $path, array $modelFiles = []): array
     {
         $uploaded = [];
-
+        
         // delete all files that are in model recordes and not in current request
-        foreach ($oldFiles as $oldFile) {
+        foreach ($request->input($key) ?? [] as $oldFile) {
             // get relative path
             $oldFile = trim(str_replace('storage/', '', parse_url($oldFile, PHP_URL_PATH)), '/');
 
@@ -52,7 +54,7 @@ class UploadService
             Storage::delete(array_diff(Storage::files($path), $modelFiles));
         }
 
-        foreach ($files as $file) {
+        foreach ($request->file($key) ?? [] as $file) {
             $uploaded[] = $file->store($path);
         }
 

@@ -24,11 +24,18 @@ class PostRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'title' => 'nullable',
             'text' => 'required',
-            'images.*' => 'nullable|image',
         ];
+
+        if (request()->hasFile('images')) {
+            $rules['images.*'] = 'image';
+        } else {
+            $rules['images'] = 'nullable';
+        }
+
+        return $rules;
     }
 
     public function withValidator($validator)
