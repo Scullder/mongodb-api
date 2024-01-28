@@ -15,7 +15,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        // TODO: take out to the route layer
+        // TODO: take out middlewares to the route layer
         $this->middleware('auth.api')->except(['index', 'show']);
     }
     

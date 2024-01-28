@@ -29,11 +29,13 @@ class PostRequest extends FormRequest
             'text' => 'required',
         ];
 
-        if (request()->hasFile('images')) {
-            $rules['images.*'] = 'image';
-        } else {
-            $rules['images'] = 'nullable';
-        }
+        foreach (request()->images as $i => $image) { 
+            if (request()->hasFile('images.' . $i)) {
+                $rules['images.'. $i] = 'image';
+            } else {
+                $rules['images.'. $i] = 'nullable';
+            }
+        }  
 
         return $rules;
     }
@@ -41,8 +43,10 @@ class PostRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if ($validator->errors()->has('images.0')) {
-                $validator->errors()->add('images', __('validation.images'));
+            foreach ($validator->errors()->toArray() as $key => $errors) {
+                if (preg_match('/images\./', $key)) {
+                    $validator->errors()->add('images', __('validation.images'));
+                }
             }
         });
     }

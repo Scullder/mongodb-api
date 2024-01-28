@@ -26,7 +26,8 @@ class UserRequest extends FormRequest
     {
         $rules = [
             'name' => 'required',
-            //'email' => 'required|unique:users,email,' . $this->user . ',_id',
+            // TODO: user->id
+            'email' => 'required|unique:users,email,' . $this->user . ',_id',
             'discord' => 'nullable',
             'telegram' => 'nullable',
             'instagram' => 'nullable',

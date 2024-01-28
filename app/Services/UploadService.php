@@ -36,7 +36,7 @@ class UploadService
     public function multiUpload(Request $request, string $key, string $path, array $modelFiles = []): array
     {
         $uploaded = [];
-        
+
         // delete all files that are in model recordes and not in current request
         foreach ($request->input($key) ?? [] as $oldFile) {
             // get relative path
@@ -55,7 +55,9 @@ class UploadService
         }
 
         foreach ($request->file($key) ?? [] as $file) {
-            $uploaded[] = $file->store($path);
+            $uploaded[] = $file->isValid() 
+                ? $file->store($path)
+                : null;
         }
 
         return $uploaded;

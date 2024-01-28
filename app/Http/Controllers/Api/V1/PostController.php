@@ -25,24 +25,20 @@ class PostController extends Controller
      */
     public function index(Request $request, PostFilter $filter)
     {
-        $filterItems = $filter->transform($request);
-
-        $resource = ($filterItems != [])
-            ? PostResource::collection(Post::where($filterItems)->get())
-            : PostResource::collection(Post::all());
-
-        return $resource;
+        return PostResource::collection(
+            Post::where($filter->transform($request))->paginate(15)
+        );
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Mongodb\Post $post
+     * @return \App\Http\Resources\PostResource
      */
-    public function show($id)
+    public function show(Post $post)
     {
-        //
+        return new PostResource($post);
     }
 
     /**
@@ -66,7 +62,7 @@ class PostController extends Controller
         $post->update([
             'images' => $uploadService->multiUpload($request, 'images', "{$user->id}/posts/post-{$post->id}"),
         ]);
-        
+
         // 201
         return new PostResource($post);
     }
@@ -76,7 +72,7 @@ class PostController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\PostResource
      */
     public function update(PostRequest $request, Post $post, UploadService $uploadService)
     {
@@ -90,14 +86,14 @@ class PostController extends Controller
             'images' => $images,
         ]);
 
-        return response('', 204);
+        //return response('', 204);
+        return new PostResource($post);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
