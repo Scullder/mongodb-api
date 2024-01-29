@@ -19,7 +19,7 @@ class FollowerResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->_id,
+            'id' => $this->id,
             'user_id' => $this->userId,
             'followed_user_id' => $this->followedUserId,
             'user' => new UserResource(User::find($this->followedUserId)),

@@ -15,14 +15,13 @@ Route::controller(AuthController::class)->prefix('/user')->group(function () {
     Route::post('/logout', 'logout');
 });
 
-Route::controller(UserController::class)->prefix('/user')->middleware('auth.api')->group(function () {
-    // TODO refactor to the apiResource
+/* Route::controller(UserController::class)->prefix('/user')->middleware('auth.api')->group(function () {
     Route::post('/store', 'store');
     Route::delete('/{id}', 'destroy');
     Route::patch('/update/{id}', 'update');
     Route::get('/index', 'index');
     Route::get('/show/{id}', 'show');
-});
+}); */
 
 Route::apiResource('users', UserController::class);
 

@@ -30,11 +30,9 @@ class PostRequest extends FormRequest
         ];
 
         foreach (request()->images as $i => $image) { 
-            if (request()->hasFile('images.' . $i)) {
-                $rules['images.'. $i] = 'image';
-            } else {
-                $rules['images.'. $i] = 'nullable';
-            }
+            $rules['images.'. $i] = request()->hasFile('images.' . $i)
+                ? 'image'
+                : 'nullable';
         }  
 
         return $rules;

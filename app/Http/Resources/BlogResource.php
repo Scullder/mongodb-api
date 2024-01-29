@@ -17,18 +17,23 @@ class BlogResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->_id,
+            'id' => $this->id,
             'author' => [
                 'authorId' => $this->authorId,
                 'name' => $this->author->name,
-                'image' => $this->author->image ? Storage::url($this->author->image) : null,
+                //'image' => $this->author->image ? Storage::url($this->author->image) : null,
+                'image' => $this->author->image && Storage::exists($this->author->image)
+                    ? Storage::url($this->author->image) . '?t=' . time() 
+                    : null,
             ],
-            'image' => $this->image ? Storage::url($this->image) : null,
+            'image' => $this->image && Storage::exists($this->image)
+                ? Storage::url($this->image) . '?t=' . time() 
+                : null,
             'title' => $this->title,
             'description' => $this->description,
             'content' => $this->content,
-            'is_public' => filter_var($this->isPublic, FILTER_VALIDATE_BOOLEAN),
-            'created_at' => (new Carbon($this->created_at))->toDateTimeString(),
+            'isPublic' => filter_var($this->isPublic, FILTER_VALIDATE_BOOLEAN),
+            'date' => date('d/m/Y H:i', strtotime($this->created_at)),
         ];
     }
 }

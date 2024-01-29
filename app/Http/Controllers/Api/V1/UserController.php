@@ -8,14 +8,11 @@ use App\Services\UploadService;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
 use App\Models\Mongodb\User;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
     public function __construct()
     {
-        // TODO: take out middlewares to the route layer
         $this->middleware('auth.api')->except(['index', 'show']);
     }
     
@@ -54,8 +51,6 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UserRequest $request
-     * @param  int  $id
      */
     public function update(UserRequest $request, User $user, UploadService $uploadService)
     {

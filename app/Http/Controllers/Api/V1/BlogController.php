@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\BlogRequest;
-use App\Http\Resources\BlogResource;
-use Illuminate\Http\Request;
-use App\Models\Mongodb\Blog;
 use App\Filters\BlogFilter;
+use App\Models\Mongodb\Blog;
+use Illuminate\Http\Request;
+use App\Services\UploadService;
+use App\Http\Requests\BlogRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\BlogResource;
 use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
@@ -24,13 +25,9 @@ class BlogController extends Controller
      */
     public function index(Request $request, BlogFilter $filter)
     {
-        $filterItems = $filter->transform($request);
-
-        $blogs = ($filterItems != []) 
-            ? Blog::where($filterItems)->get() 
-            : Blog::all();
-
-        return BlogResource::collection($blogs);
+        return BlogResource::collection(
+            Blog::where($filter->transform($request))->paginate(15)
+        );
     }
 
     /**
@@ -39,23 +36,23 @@ class BlogController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(BlogRequest $request)
+    public function store(BlogRequest $request, UploadService $uploadService)
     {
-        $credentials = $request->validated();
+        $validated = $request->validated();
 
         $blog = Blog::create([
-            'authorId' => $credentials['author_id'],
-            //'image' => $credentials['image'] ?? '',
-            'title' => $credentials['title'],
-            'description' => $credentials['description'],
-            'content' => $credentials['content'],
-            'isPublic' => $credentials['is_public'],
+            'authorId' => $validated['author_id'],
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'content' => $validated['content'],
+            'isPublic' => $validated['is_public'],
         ]);
 
-        $imageName = $request->file('image')?->store("{$credentials['author_id']}/images/blogs/blog-{$blog->_id}");
-        $blog->update(['image' => $imageName]);
+        $image = $uploadService->singleUpload($request, 'image', "{$validated['author_id']}/blogs/blog-{$blog->id}");
+
+        $blog->update(['image' => $image]);
         
-        return response(['id' => $blog->_id], 201);
+        return response(['id' => $blog->id], 201);
     }
 
     /**
@@ -64,14 +61,8 @@ class BlogController extends Controller
      * @param  int  $id
      * @return \App\Http\Resources\BlogResource
      */
-    public function show($id)
+    public function show(Blog $blog)
     {
-        $blog = Blog::where('_id', $id)->first();
-
-        if (!$blog) {
-            return response([], 404);
-        }
-
         return new BlogResource($blog);
     }
 
@@ -82,26 +73,11 @@ class BlogController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(BlogRequest $request, $id)
+    public function update(BlogRequest $request, Blog $blog, UploadService $uploadService)
     {
         $validated = $request->validated();
-
-        $blog = Blog::find($id);
-
-        if ($request->image != Storage::url($blog->image)) {
-            Storage::delete((string)$blog->image);
-            $image = $request->file('image')?->store("{$validated['author_id']}/images/blogs/blog-{$blog->_id}");
-        } else {
-            $image = $blog->image;
-        }
-
-        $blog->update([
-            'image' => (string)$image,
-            'title' => (string)$validated['title'],
-            'description' => (string)$validated['description'],
-            'content' => (string)$validated['content'],
-            'isPublic' => $validated['is_public'] ?? false,
-        ]);
+        $validated['image'] = $uploadService->singleUpload($request, 'image', "{$validated['authorId']}/blogs/blog-{$blog->id}", $blog->image);
+        $blog->update($validated);
 
         return response('', 204);
     }
@@ -112,8 +88,10 @@ class BlogController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Blog $blog)
     {
-        //
+        $blog->delete();
+        
+        return response('', 200);
     }
 }

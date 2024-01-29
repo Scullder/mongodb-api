@@ -26,32 +26,20 @@ class UserRequest extends FormRequest
     {
         $rules = [
             'name' => 'required',
-            // TODO: user->id
             'email' => 'required|unique:users,email,' . $this->user . ',_id',
             'discord' => 'nullable',
             'telegram' => 'nullable',
             'instagram' => 'nullable',
             'description' => 'nullable',
-            /* 'image' => [
-                function ($attribute, $value, $fail) {
-                    if (!request()->hasFile($attribute)) {
-                        request()->remove($attribute);
-                    }
-                }
-            ], */
         ];
 
-        if (request()->hasFile('image')) {
-            $rules['image'] = 'image';
-        } else {
-            $rules['image'] = 'nullable';
-        }
+        $rules['image'] = request()->hasFile('image')
+            ? 'image'
+            : 'nullable';
 
-        if (request()->hasFile('backImage')) {
-            $rules['backImage'] = 'image';
-        } else {
-            $rules['backImage'] = 'nullable';
-        }
+        $rules['backImage'] = request()->hasFile('backImage')
+            ? 'image'
+            : 'nullable';
        
         return $rules;
     }

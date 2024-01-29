@@ -25,7 +25,7 @@ class UploadService
         if ($request->file($key)) {
             try {
                 $uploaded = $request->file($key)->store($path);
-            } catch (\Exception) {
+            } catch (\Exception $e) {
                 $uploaded = null;
             }
         }

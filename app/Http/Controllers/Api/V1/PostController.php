@@ -47,7 +47,7 @@ class PostController extends Controller
      * @param  \App\Http\Requests\PostRequest $request
      * @return \App\Http\Resources\PostResource
      */
-    public function store(PostRequest $request, User $user, UploadService $uploadService)
+    public function store(PostRequest $request, UploadService $uploadService)
     {
         $validated = $request->validated();
         $user = auth('sanctum')->user();
@@ -94,9 +94,12 @@ class PostController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
         Post::find($id)->delete();
+
+        return response('', 200);
     }
 }

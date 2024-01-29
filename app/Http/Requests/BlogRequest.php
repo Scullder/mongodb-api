@@ -23,22 +23,27 @@ class BlogRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'author_id' => 'required',
-            'image' => $this->getValidationRule('image'),
+        $rules = [
+            'authorId' => 'required',
             'title' => 'required',
             'description' => 'nullable',
             'content' => 'nullable',
-            'is_public' => 'nullable',
+            'isPublic' => 'nullable',
         ];
+
+        $rules['image'] = request()->hasFile('image')
+            ? 'image'
+            : 'nullable';
+
+        return $rules;
     }
 
-    public function getValidationRule(String $key): string
+    public function withValidator($validator)
     {
-        if (request()->hasFile($key)) {
-            return "nullable|image";
-        }
-
-        return "nullable|string";
+        $validator->after(function ($validator) {
+            if (!empty(request()->file('image')) && !request()->file('image')->isValid()) {
+                $validator->errors()->add('image', __('Не удалось загрузить файл'));
+            }
+        });
     }
 }

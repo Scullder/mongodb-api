@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Mongodb\User;
+use Illuminate\Http\Request;
+use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SignupRequest;
-use App\Http\Requests\LoginRequest;
-use Illuminate\Http\Request;
-use App\Models\Mongodb\User;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -37,14 +38,14 @@ class AuthController extends Controller
         if(!Auth::attempt($credentials)) {
             return response([
                 'message' => 'Invalid login attempt'
-            ]);
+            ], 400);
         }
 
         $user = Auth::user(); 
         $token = $user->createToken('api')->plainTextToken;
 
         return response([
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $token
         ]);
     }
