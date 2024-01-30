@@ -20,11 +20,14 @@ class CommentResource extends JsonResource
             'author' => [
                 'authorId' => $this->authorId,
                 'name' => $this->author->name,
-                'image' => $this->author->image ? Storage::url($this->author->image) : null,
+                //'image' => $this->author->image ? Storage::url($this->author->image) : null,
+                'image' => $this->author->image && Storage::exists($this->author->image)
+                    ? Storage::url($this->author->image) 
+                    : null,
             ],
             'postId' => $this->postId,
             'text' => $this->text,
-            'date' => $this->created_at,
+            'date' => date('d/m/Y H:i', strtotime($this->created_at)),
         ];
     }
 }

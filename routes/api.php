@@ -9,7 +9,6 @@ use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->prefix('/user')->group(function () {
-    // TODO refactor to the apiResource
     Route::post('/signup', 'signup');
     Route::post('/login', 'login')->name('login');
     Route::post('/logout', 'logout');
@@ -27,7 +26,7 @@ Route::apiResource('users', UserController::class);
 
 Route::apiResource('posts', PostController::class);
 
-Route::apiResource('comments', CommentController::class)->middleware('auth.api');
+Route::apiResource('comments', CommentController::class)->only(['index', 'store', 'destroy'])->middleware('auth.api');
 
 Route::apiResource('blogs', BlogController::class);
 

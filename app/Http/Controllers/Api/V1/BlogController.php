@@ -9,7 +9,6 @@ use App\Services\UploadService;
 use App\Http\Requests\BlogRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BlogResource;
-use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -34,25 +33,25 @@ class BlogController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\BlogResource
      */
     public function store(BlogRequest $request, UploadService $uploadService)
     {
         $validated = $request->validated();
 
         $blog = Blog::create([
-            'authorId' => $validated['author_id'],
+            'authorId' => $validated['authorId'],
             'title' => $validated['title'],
             'description' => $validated['description'],
             'content' => $validated['content'],
-            'isPublic' => $validated['is_public'],
+            'isPublic' => $validated['isPublic'],
         ]);
 
-        $image = $uploadService->singleUpload($request, 'image', "{$validated['author_id']}/blogs/blog-{$blog->id}");
+        $image = $uploadService->singleUpload($request, 'image', "{$validated['authorId']}/blogs/blog-{$blog->id}");
 
         $blog->update(['image' => $image]);
         
-        return response(['id' => $blog->id], 201);
+        return new BlogResource($blog);
     }
 
     /**

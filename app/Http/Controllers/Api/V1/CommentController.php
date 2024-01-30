@@ -13,63 +13,38 @@ class CommentController extends Controller
 {
     public function index(Request $request, CommentFilter $filter)
     {
-        $filterItems = $filter->transform($request);
-
-        $comments = ($filterItems != []) ? Comment::where($filterItems)->get() : Comment::all();
-
-        return CommentResource::collection($comments);
+        return CommentResource::collection(
+            Comment::where($filter->transform($request))->get()
+        );
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\CommentResource
      */
     public function store(CommentRequet $request)
     {
-        $credentials = $request->validated();
+        $comment = Comment::create($request->validated());
 
-        $comment = Comment::create([
-            'authorId' => $credentials['author_id'],
-            'postId' => $credentials['post_id'],
-            'text' => $credentials['text'],
-        ]);
-
-        return response('', 201);
+        return new CommentResource($comment);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    /* 
     public function show($id)
     {
         //
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function update(Request $request, $id)
     {
         //
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function destroy($id)
     {
         //
-    }
+    } 
+    */
 }

@@ -21,7 +21,7 @@ class PostResource extends JsonResource
             'authorId' => $this->authorId,
             'author' => $this->author
                 ? [
-                    'id' => $this->author->id,
+                    'authorId' => $this->author->id,
                     'name' => $this->author->name,
                     'image' => $this->author->image ? Storage::url($this->author->image) : null,
                 ]

@@ -24,8 +24,8 @@ class CommentRequet extends FormRequest
     public function rules()
     {
         return [
-            'author_id' => 'required',
-            'post_id' => 'required',
+            'authorId' => 'required',
+            'postId' => 'required',
             'text' => 'required',
         ];
     }
