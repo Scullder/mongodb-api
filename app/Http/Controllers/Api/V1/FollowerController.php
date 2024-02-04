@@ -18,13 +18,9 @@ class FollowerController extends Controller
      */
     public function index(Request $request, FollowerFilter $filter)
     {
-        $filterItems = $filter->transform($request);
-
-        $collection = ($filterItems != [])
-            ? Follower::where($filterItems)->get()
-            : Follower::all();
-
-        return FollowerResource::collection($collection);
+        return FollowerResource::collection(
+            Follower::where($filter->transform($request))->get()
+        );
     }
 
     /**
@@ -37,8 +33,8 @@ class FollowerController extends Controller
     {
         $validated = $request->validated();
 
-        $followId = Follower::where('userId', $validated['user_id'])
-            ->where('followedUserId', $validated['followed_user_id'])
+        $followId = Follower::where('userId', $validated['userId'])
+            ->where('followedUserId', $validated['followedUserId'])
             ->first();
 
         if ($followId !== null) {
@@ -46,11 +42,11 @@ class FollowerController extends Controller
         }
 
         $follow = Follower::create([
-            'userId' => $validated['user_id'],
-            'followedUserId' => $validated['followed_user_id']
+            'userId' => $validated['userId'],
+            'followedUserId' => $validated['followedUserId']
         ]);
 
-        return response(['id' => $follow->_id], 201);
+        return response(['id' => $follow->id], 201);
     }
 
     /**

@@ -32,9 +32,9 @@ class UserResource extends JsonResource
             'discord' => $this->discord,
             'telegram' => $this->telegram,
             'instagram' => $this->instagram,
-            'followersCount' => Follower::where('userId', $this->id)->count(),
-            'followingCount' => Follower::where('followedUserId', $this->_id)->count(),
-            'publicationsCount' => Post::where('authorId', $this->_id)->count(),
+            'followersCount' => Follower::where('followedUserId', $this->id)->count(),
+            'followingCount' => Follower::where('userId', $this->id)->count(),
+            'publicationsCount' => Post::where('authorId', $this->id)->count(),
         ];
     }
 }

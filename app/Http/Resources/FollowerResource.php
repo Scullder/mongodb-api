@@ -20,9 +20,10 @@ class FollowerResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->userId,
-            'followed_user_id' => $this->followedUserId,
+            'userId' => $this->userId,
+            'followedUserId' => $this->followedUserId,
             'user' => new UserResource(User::find($this->followedUserId)),
+            'followedUser' => new UserResource(User::find($this->userId)),
         ];
     }
 }

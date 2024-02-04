@@ -3,10 +3,11 @@
 namespace App\Models\Mongodb;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Jenssegers\Mongodb\Eloquent\Model;
 use Jenssegers\Mongodb\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Database\Factories\UserFactory;
+use App\Models\Mongodb\Blog;
+use App\Models\Mongodb\Post;
 
 class User extends Authenticatable
 {
@@ -32,5 +33,10 @@ class User extends Authenticatable
     public function posts()
     {
         return $this->hasMany(Post::class, 'authorId', '_id');
+    }
+
+    public function blogs()
+    {
+        return $this->hasMany(Blog::class, 'authorId', '_id');
     }
 }
