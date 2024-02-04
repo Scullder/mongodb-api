@@ -29,7 +29,7 @@ class PostResource extends JsonResource
             'title' => $this->title,
             'text' => $this->text,
             'images' => collect($this->images)->map(function ($image) {
-                return Storage::exists($image) ? Storage::url($image) : '';
+                return Storage::exists($image) ? Storage::url($image) : null;
             }),
             'date' => date('d-m-Y H:i', strtotime($this->created_at)),
             'comments' => CommentResource::collection($this->comments),

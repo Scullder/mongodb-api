@@ -29,7 +29,7 @@ class PostRequest extends FormRequest
             'text' => 'required',
         ];
 
-        foreach (request()->images as $i => $image) { 
+        foreach (request()->images ?? [] as $i => $image) { 
             $rules['images.'. $i] = request()->hasFile('images.' . $i)
                 ? 'image'
                 : 'nullable';

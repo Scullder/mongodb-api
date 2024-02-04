@@ -2,12 +2,16 @@
 
 namespace App\Models\Mongodb;
 
+use Database\Factories\PostFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Model;
 use App\Models\Mongodb\User;
 use App\Models\Mongodb\Comment;
 
 class Post extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'authorId', 'title', 'text', 'images',
     ];
@@ -20,5 +24,10 @@ class Post extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class, 'postId', '_id');
+    }
+
+    protected static function newFactory()
+    {
+        return PostFactory::new();
     }
 }

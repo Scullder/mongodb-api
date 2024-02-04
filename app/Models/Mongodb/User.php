@@ -2,13 +2,15 @@
 
 namespace App\Models\Mongodb;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Jenssegers\Mongodb\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Database\Factories\UserFactory;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
+    use HasApiTokens, HasFactory;
 
     protected $fillable = [
         'name',
@@ -22,4 +24,13 @@ class User extends Authenticatable
         'backImage',
     ];
 
+    protected static function newFactory()
+    {
+        return UserFactory::new();
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'authorId', '_id');
+    }
 }

@@ -26,7 +26,7 @@ class PostController extends Controller
     public function index(Request $request, PostFilter $filter)
     {
         return PostResource::collection(
-            Post::where($filter->transform($request))->paginate(15)
+            Post::where($filter->transform($request))->orderBy('created_at', 'desc')->paginate(15)
         );
     }
 
