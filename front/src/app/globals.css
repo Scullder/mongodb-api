@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100&display=swap');
+@import "../styles/ckeditor.css";
+@import "../styles/loading-ring.css";
+@import "../styles/glowing.css";
+@import "../styles/switch.css";
+@import 'animate.css';
+
+.shadowed {
+  box-shadow: 0px 10px 50px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* .ey-1 {
+  box-shadow: 1px 1px 20px #F27289;
+}
+.ey-1:hover {
+  box-shadow: 1px 1px 30px #F0ACA1;
+}
+
+.ey-2 {
+  box-shadow: 1px 1px 20px #57A5D4;
+}
+.ey-2:hover {
+  box-shadow: 1px 1px 30px #57A5D4;
+} */
+
+h1 {
+  @apply text-4xl mb-4;
+}
+h2 {
+  @apply text-3xl mb-4;
+}
+h3 {
+  @apply text-2xl mb-4;
+}
+h4 {
+  @apply text-xl mb-4;
+}
+h5 {
+  @apply text-lg mb-4;
+}
+h6 {
+  @apply text-sm mb-4;
+}
+
+p {
+  @apply mb-4;
+}
