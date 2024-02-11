@@ -11,6 +11,8 @@ export default function Header() {
   const { user, setUser, setToken, setLoading } = useStateContext()
   const [isNameHover, setIsNameHover] = useState(false)
 
+  console.log(user)
+
   const itemClass = 'hover:cursor-pointer hover:border-b border-primary hover:text-primary p-2 text-sm uppercase font-bold';
 
   const router = useRouter();
