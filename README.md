@@ -10,11 +10,13 @@
     - настроить переменные подключения к БД. Поддерживается только Mongodb
     - при необходимости изменить значение переменной APP_URL
 2. Выполнить следующие команды(Windows):
-`composer install`
-`php artisan key:generate`
-`php artisan storage:link`
-`php artisan db:seed`
-`php artisan serve`
-`cd front`
-`npm install`
-`npm run dev`
+```console
+composer install
+php artisan key:generate
+php artisan storage:link
+php artisan db:seed
+php artisan serve
+cd front
+npm install
+npm run dev
+```
